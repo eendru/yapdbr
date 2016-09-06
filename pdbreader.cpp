@@ -1,6 +1,6 @@
-#include "pdbreader.h"
-#include <fstream>
-
+#include "pdbreader.hh"
+#include <cstring>
+#include <map>
 
 enum PDB_LINE_E {
     HEADER, OBSLTE, TITLE, CAVEAT, COMPND, SOURCE, KEYWDS, EXPDTA, AUTHOR, REMARK,
@@ -13,17 +13,17 @@ enum PDB_LINE_E {
     MODEL, ATOM, SIGATM, ANISOU, SIGUIIJ, TER, HETATM, ENDMDL,
     CONNECT,
     MASTER, END,
-    UNKNOW
+    UNKNOWN
 };
 
-static const std::map<std::srting, PDB_LINE_E> line_names = {
-    {"HEADER", HEADER}, {"OBSLTE", OBSLTE}, {TITLE, "TITLE"}, {"CAVEAT", CAVEAT},
-    {"COMPND", COMPND}, {"SOURCE", SOURCE}, {KEYWDS, "KEYWDS"}, {EXPDTA, "EXPDTA"},
+static const std::map<std::string, PDB_LINE_E> line_names = {
+    {"HEADER", HEADER}, {"OBSLTE", OBSLTE}, {"TITLE", TITLE}, {"CAVEAT", CAVEAT},
+    {"COMPND", COMPND}, {"SOURCE", SOURCE}, {"KEYWDS", KEYWDS}, {"EXPDTA", EXPDTA},
     {"AUTHOR", AUTHOR}, {"REMARK", REMARK},
 
     {"DBREF", DBREF}, {"SEQADV", SEQADV}, {"SEQRES", SEQRES}, {"MODRES", MODRES},
 
-    {"HET", HET}, {HETNAM, "HETNAM"}, {"HETSYN", HETSYN}, {"FORMUL", FORMUL},
+    {"HET", HET}, {"HETNAM", HETNAM}, {"HETSYN", HETSYN}, {"FORMUL", FORMUL},
 
     {"HELIX", HELIX}, {"SHEET", SHEET}, {"TURN", TURN},
     {"SSBOND", SSBOND}, {"LINK", LINK}, {"HYDBND", HYDBND}, {"SLTBRG", SLTBRG}, {"CISPEP", CISPEP},
@@ -38,16 +38,19 @@ static const std::map<std::srting, PDB_LINE_E> line_names = {
 
     {"CONNECT", CONNECT},
     {"MASTER", MASTER}, {"END", END},
+
+    {"UNKNOWN", UNKNOWN},
 };
 
 static PDB_LINE_E
 getTypeOfLine(std::string &line) {
     for (auto& kv : line_names) {
-        if (!std::strncmp(line, kv.first, kv.first.length())) {
+        if (!std::strncmp(line.c_str(), kv.first.c_str(), kv.first.length())) {
+            std::cout << kv.first.c_str() << "\n";
             return kv.second;
         }
     }
-    return UNKNOW;
+    return UNKNOWN;
 }
 
 PDBReader::PDBReader(std::string &file)
@@ -59,18 +62,24 @@ PDBReader::~PDBReader()
 {
 
 }
-void PDBReader::openParseClose() {
-    std::ifstream sfile;
-    sfile.open(file, ios::in);
+void PDBReader::open() {
+    is_.open(file_, std::ios::in);
+    if (!is_.is_open()) {
+        throw std::string("Can't open file");
+    }
+}
 
-    if (!s.open())
-        throw "Can't open file";
+void PDBReader::close() {
+    is_.close();
+}
 
+void PDBReader::parse() {
     std::string line;
     PDB_LINE_E type;
 
-    while (std::getline(sfile, line)) {
+    while (std::getline(is_, line)) {
         type = getTypeOfLine(line);
+
         switch(type) {
         case (HEADER):
             break;
@@ -91,6 +100,15 @@ void PDBReader::openParseClose() {
             break;
         }
     }
+}
 
-    sfile.close();
+void PDBReader::parsePDB() {
+    try {
+        open();
+    } catch (std::string &s) {
+            std::cerr << s << " ";
+            return;
+    }
+    parse();
+    close();
 }
