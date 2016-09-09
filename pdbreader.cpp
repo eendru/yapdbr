@@ -42,15 +42,17 @@ static const std::map<std::string, PDB_LINE_E> line_names = {
     {"UNKNOWN", UNKNOWN},
 };
 
-static PDB_LINE_E
-getTypeOfLine(std::string &line) {
-    for (auto& kv : line_names) {
-        if (!std::strncmp(line.c_str(), kv.first.c_str(), kv.first.length())) {
-            std::cout << kv.first.c_str() << "\n";
-            return kv.second;
-        }
+static std::string
+getStringTypeOfLine(std::string &line) {
+    std::string result;
+    for (auto c : line){
+        if (c == ' ')
+            break;
+        else
+            result.push_back(c);
     }
-    return UNKNOWN;
+
+    return result;
 }
 
 PDBReader::PDBReader(std::string &file)
@@ -78,7 +80,8 @@ void PDBReader::parse() {
     PDB_LINE_E type;
 
     while (std::getline(is_, line)) {
-        type = getTypeOfLine(line);
+        std::string key = getStringTypeOfLine(line);
+        type = line_names.at(key);
 
         switch(type) {
         case (HEADER):
@@ -96,6 +99,9 @@ void PDBReader::parse() {
         case (HETATM):
             break;
 
+        case (UNKNOWN):
+	        std::cerr << "Something bad with your pdb";
+	        return;
         default:
             break;
         }

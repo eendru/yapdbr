@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <map>
 
 class PDBReader {
 public:
@@ -14,6 +15,8 @@ public:
 private:
     std::string file_;
     std::ifstream is_;
+
+    std::map<std::string, std::string> data;
 
     void open();
     void close();
