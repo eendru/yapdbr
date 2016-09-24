@@ -75,13 +75,17 @@ void PDBReader::close() {
     is_.close();
 }
 
+std::map<int, std::string>& PDBReader::Data() {
+    return data_;
+}
+
 void PDBReader::parse() {
     std::string line;
     PDB_LINE_E type;
 
     while (std::getline(is_, line)) {
-        std::string key = getStringTypeOfLine(line);
-        type = line_names.at(key);
+        std::string strType = getStringTypeOfLine(line);
+        type = line_names.at(strType);
 
         switch(type) {
         case (HEADER):
@@ -93,8 +97,11 @@ void PDBReader::parse() {
         case (MODEL):
             break;
 
-        case (ATOM):
+        case (ATOM): {
+	    int key = std::atoi(line.substr(6, 10).c_str());
+	    data_[key] = line.substr(11, line.length());
             break;
+	}
 
         case (HETATM):
             break;
