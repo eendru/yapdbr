@@ -12,13 +12,11 @@ public:
     ~PDBReader();
     void parsePDB();
 
-    std::map<int, std::string>&
-    Data();
+    std::map<int, std::string>& getData();
 
 private:
     std::string file_;
     std::ifstream is_;
-
     std::map<int, std::string> data_;
 
     void open();
