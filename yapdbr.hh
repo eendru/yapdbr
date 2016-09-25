@@ -10,6 +10,11 @@ typedef std::tuple<double, double, double> coordinates_t;
 typedef std::list<coordinates_t> atomsList;
 typedef std::vector<coordinates_t> atomsVector;
 
+// This enum is used as format for what we need.
+// Think about logic expression on this enum
+// For example CA || CB
+// See ProDy python package
+
 enum ATOM_TYPE_E{
     CA,
     CB,

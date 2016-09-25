@@ -12,7 +12,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g")
 set(SOURCE_YAPDBR
 	pdbreader.cpp
     yapdbr.cpp
-	main.cc
 )
 
 set(HEADER_YAPDBR
@@ -22,6 +21,13 @@ set(HEADER_YAPDBR
 
 set(PROJECT_BINARY_DIR "$<CMAKE_CURRENT_SOURCE_DIR>/.build/")
 
-add_executable(yapdbr ${SOURCE_YAPDBR} ${HEADER_YAPDBR})
+add_library(YAPDBR SHARED ${SOURCE_YAPDBR} ${HEADER_YAPDBR})
 
+add_executable(yapdbrm main.cc)
+target_link_libraries(yapdbrm YAPDBR)
+
+enable_testing()
+add_executable(test_yapdbr testyapdbr.cpp)
+target_link_libraries(test_yapdbr YAPDBR)
+add_test(test_yapdbr ${CMAKE_CURRENT_BINARY_DIR}/test_yapdbr)
 
