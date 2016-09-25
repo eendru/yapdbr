@@ -9,15 +9,17 @@ CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g")
 
+set(SOURCE_YAPDBR
+	pdbreader.cpp
+    yapdbr.cpp
+)
+
+set(HEADER_YAPDBR
+    pdbreader.hh
+    yapdbr.hh
+)
+
 set(PROJECT_BINARY_DIR "$<CMAKE_CURRENT_SOURCE_DIR>/.build/")
 
-include_directories("./include/")
-add_subdirectory("./include/")
-
-add_executable(yapdbrm main.cc)
-target_link_libraries(yapdbrm YAPDBR)
-
-enable_testing()
-add_subdirectory("./tests/")
-#add_test(test_yapdbr ${CMAKE_CURRENT_BINARY_DIR}/test_yapdbr)
+add_library(YAPDBR SHARED ${SOURCE_YAPDBR} ${HEADER_YAPDBR})
 
