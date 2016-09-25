@@ -1,6 +1,5 @@
-#include "pdbreader.hh"
-#include "yapdbr.hh"
-
+#include <pdbreader.hh>
+#include <yapdbr.hh>
 
 
 void printList(atomsList &l) {
