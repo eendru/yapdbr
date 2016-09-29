@@ -21,15 +21,19 @@ enum ATOM_TYPE_E{
     N,
     C,
     O,
+    CE,
+    CG2,
     ALL,   // for all type of atoms
     UNKN,  // UNKNOWN
 };
 typedef ATOM_TYPE_E atom_type_t;
 typedef std::map<std::string, atom_type_t> string_atom_type_map_t;
 
-static const string_atom_type_map_t type_atom_map = {
+const string_atom_type_map_t type_atom_map = {
     {"CA", CA},
     {"CB", CB},
+    {"CE", CE},
+    {"CG2", CG2},
     {"N", N},
     {"C", C},
     {"O", O},

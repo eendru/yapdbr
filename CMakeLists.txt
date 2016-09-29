@@ -20,4 +20,5 @@ set(EXAMPLE_SOURCE
 
 add_executable(${EXAMPLE_NAME} ${EXAMPLE_SOURCE})
 add_subdirectory(include)
+enable_testing()
 target_link_libraries(${EXAMPLE_NAME} ${EXAMPLE_LIBRARIES})

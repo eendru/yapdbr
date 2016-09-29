@@ -31,4 +31,5 @@ target_include_directories(${LIBRARY_NAME} PUBLIC
 target_include_directories(${LIBRARY_NAME} PRIVATE
          $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${LIBRARY_NAME}> )
 
+enable_testing()
 add_subdirectory(tests)
