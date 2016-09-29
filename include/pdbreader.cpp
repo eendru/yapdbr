@@ -3,13 +3,13 @@
 #include <map>
 
 enum PDB_LINE_E {
-    HEADER, OBSLTE, TITLE, CAVEAT, COMPND, SOURCE, KEYWDS, EXPDTA, AUTHOR, REMARK,
+    HEADER, OBSLTE, TITLE, CAVEAT, COMPND, SOURCE, KEYWDS, EXPDTA, AUTHOR, REVDAT, SPRSDE, JRNL, REMARK,
     DBREF, SEQADV, SEQRES, MODRES,
     HET, HETNAM, HETSYN, FORMUL,
     HELIX, SHEET, TURN,
     SSBOND, LINK, HYDBND, SLTBRG, CISPEP,
     SITE,
-    CRYST1, ORIGXn, SCALEn, MTRIXn, TVECT,
+    CRYST1, ORIGX1, ORIGX2, ORIGX3, SCALE1, SCALE2, SCALE3, MTRIX1, MTRIX2, MTRIX3, TVECT,
     MODEL, ATOM, SIGATM, ANISOU, SIGUIIJ, TER, HETATM, ENDMDL,
     CONNECT,
     MASTER, END,
@@ -19,7 +19,8 @@ enum PDB_LINE_E {
 static const std::map<std::string, PDB_LINE_E> line_names = {
     {"HEADER", HEADER}, {"OBSLTE", OBSLTE}, {"TITLE", TITLE}, {"CAVEAT", CAVEAT},
     {"COMPND", COMPND}, {"SOURCE", SOURCE}, {"KEYWDS", KEYWDS}, {"EXPDTA", EXPDTA},
-    {"AUTHOR", AUTHOR}, {"REMARK", REMARK},
+    {"AUTHOR", AUTHOR}, {"REMARK", REMARK}, {"REVDAT", REVDAT}, {"SPRSDE", SPRSDE},
+    {"JRNL", JRNL},
 
     {"DBREF", DBREF}, {"SEQADV", SEQADV}, {"SEQRES", SEQRES}, {"MODRES", MODRES},
 
@@ -30,13 +31,16 @@ static const std::map<std::string, PDB_LINE_E> line_names = {
 
     {"SITE", SITE},
 
-    {"CRYST1", CRYST1}, {"ORIGXn", ORIGXn}, {"SCALEn", SCALEn}, {"MTRIXn", MTRIXn},
+    {"CRYST1", CRYST1}, {"ORIGX1", ORIGX1},  {"ORIGX2", ORIGX2},  {"ORIGX3", ORIGX3},
+    {"SCALE1", SCALE1}, {"SCALE2", SCALE2}, {"SCALE3", SCALE3},
+    {"MTRIX1", MTRIX2}, {"MTRIX2", MTRIX2}, {"MTRIX3", MTRIX3},
+
     {"TVECT", TVECT},
 
     {"MODEL", MODEL}, {"ATOM", ATOM}, {"SIGATM", SIGATM}, {"ANISOU", ANISOU}, {"SIGUIIJ", SIGUIIJ},
     {"TER", TER}, {"HETATM", HETATM}, {"ENDMDL", ENDMDL},
 
-    {"CONNECT", CONNECT},
+    {"CONECT", CONNECT},
     {"MASTER", MASTER}, {"END", END},
 
     {"UNKNOWN", UNKNOWN},
@@ -75,13 +79,22 @@ void PDBReader::close() {
     is_.close();
 }
 
+std::map<int, std::string>& PDBReader::getData() {
+    return data_;
+}
+
 void PDBReader::parse() {
     std::string line;
     PDB_LINE_E type;
 
     while (std::getline(is_, line)) {
-        std::string key = getStringTypeOfLine(line);
-        type = line_names.at(key);
+        std::string strType = getStringTypeOfLine(line);
+        try {
+            type = line_names.at(strType);
+        } catch(std::exception &e) {
+            std::cerr << e.what() << " troubles with parsing " << line << std::endl;
+            type = UNKNOWN;
+        }
 
         switch(type) {
         case (HEADER):
@@ -93,15 +106,18 @@ void PDBReader::parse() {
         case (MODEL):
             break;
 
-        case (ATOM):
+        case (ATOM): {
+            int key = std::atoi(line.substr(6, 10).c_str());
+	        data_[key] = line;
             break;
+        }
 
         case (HETATM):
             break;
 
         case (UNKNOWN):
-	        std::cerr << "Something bad with your pdb";
-	        return;
+	        std::cerr << "Something bad with your pdb at line " << line << "\n";
+	        continue;
         default:
             break;
         }

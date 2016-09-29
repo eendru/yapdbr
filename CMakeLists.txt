@@ -1,27 +1,23 @@
 cmake_minimum_required(VERSION 3.2)
 
-PROJECT (yapdbr)
+if (UNIX)
+	set(CMAKE_CXX_COMPILER /usr/bin/g++)
+endif()
 
-SET(CMAKE_CXX_COMPILER /usr/bin/g++)
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+set(CMAKE_CXX_STANDARD 11)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(EXAMPLE_NAME
+	example)
 
-set(SOURCE_YAPDBR
-	pdbreader.cpp
-    yapdbr.cpp
-	main.cc
-)
+project(${EXAMPLE_NAME})
 
-set(HEADER_YAPDBR
-    pdbreader.hh
-    yapdbr.hh
-)
+set(EXAMPLE_LIBRARIES
+	YAPDBR)
+set(EXAMPLE_SOURCE_DIR
+	examples)
+set(EXAMPLE_SOURCE
+	${EXAMPLE_SOURCE_DIR}/main.cpp)
 
-set(PROJECT_BINARY_DIR "$<CMAKE_CURRENT_SOURCE_DIR>/.build/")
-
-add_executable(yapdbr ${SOURCE_YAPDBR} ${HEADER_YAPDBR})
-
-
+add_executable(${EXAMPLE_NAME} ${EXAMPLE_SOURCE})
+add_subdirectory(include)
+target_link_libraries(${EXAMPLE_NAME} ${EXAMPLE_LIBRARIES})
