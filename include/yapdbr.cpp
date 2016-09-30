@@ -26,6 +26,7 @@ static inline std::string &trim(std::string &s) {
 
 YAPDBR::YAPDBR(std::map<int, std::string> &data) {
     data_ = data;
+    finished = false;
 }
 
 atom_type_t getAtomType(std::string &line) {
@@ -96,7 +97,12 @@ atomsList YAPDBR::asList(std::string format) {
         }
     }
 
+    finished = true;
     return result;
+}
+
+bool YAPDBR::isFinished() {
+    return finished;
 }
 
 // TODO don't usr asList()

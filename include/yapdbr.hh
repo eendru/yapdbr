@@ -46,12 +46,14 @@ atom_type_t getAtomType(std::string &line);
 
 class YAPDBR {
 public:
-	YAPDBR(std::map<int, std::string>& data);
-	atomsList asList(std::string format = "ALL");
+    YAPDBR(std::map<int, std::string>& data);
+    atomsList asList(std::string format = "ALL");
     atomsVector asVector(std::string format = "ALL");
+    bool isFinished();
 private:
     coordinates_t toCoordinates(std::string &line);
 
     std::map<int, std::string> data_;
+    bool finished;
 };
 
