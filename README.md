@@ -1,5 +1,6 @@
 # yapdbr
-Yet Another Protein Data Base reader
+
+Yet Another Protein Data Base pdb reader
 
 USAGE:
 ```
