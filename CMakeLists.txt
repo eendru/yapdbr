@@ -1,24 +1,35 @@
 cmake_minimum_required(VERSION 3.2)
 
+set(LIBRARY_NAME YAPDBR)
+
 if (UNIX)
 	set(CMAKE_CXX_COMPILER /usr/bin/g++)
 endif()
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(EXAMPLE_NAME
-	example)
+set(SOURCE_YAPDBR
+    pdbreader.cpp
+    yapdbr.cpp
+)
 
-project(${EXAMPLE_NAME})
+set(HEADERS_YAPDBR
+    pdbreader.hh
+    yapdbr.hh
+)
 
-set(EXAMPLE_LIBRARIES
-	YAPDBR)
-set(EXAMPLE_SOURCE_DIR
-	examples)
-set(EXAMPLE_SOURCE
-	${EXAMPLE_SOURCE_DIR}/main.cpp)
+project(${LIBRARY_NAME})
 
-add_executable(${EXAMPLE_NAME} ${EXAMPLE_SOURCE})
-add_subdirectory(include)
+add_library( ${LIBRARY_NAME} STATIC
+             ${HEADERS_YAPDBR}
+             ${SOURCE_YAPDBR}
+           )
+
+target_include_directories(${LIBRARY_NAME} PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>)
+
+target_include_directories(${LIBRARY_NAME} PRIVATE
+         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${LIBRARY_NAME}> )
+
 enable_testing()
-target_link_libraries(${EXAMPLE_NAME} ${EXAMPLE_LIBRARIES})
+add_subdirectory(tests)
