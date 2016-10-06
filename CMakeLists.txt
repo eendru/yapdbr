@@ -2,10 +2,6 @@ cmake_minimum_required(VERSION 3.2)
 
 set(LIBRARY_NAME YAPDBR)
 
-if (UNIX)
-	set(CMAKE_CXX_COMPILER /usr/bin/g++)
-endif()
-
 set(CMAKE_CXX_STANDARD 11)
 
 set(SOURCE_YAPDBR
