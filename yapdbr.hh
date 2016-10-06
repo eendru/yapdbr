@@ -54,6 +54,6 @@ private:
     coordinates_t toCoordinates(std::string &line);
 
     std::map<int, std::string> data_;
-    bool finished;
+    bool finished_;
 };
 
