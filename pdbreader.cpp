@@ -62,6 +62,7 @@ getStringTypeOfLine(std::string &line) {
 PDBReader::PDBReader(std::string &file)
 {
     file_ = file;
+    done_ = false;
 }
 
 PDBReader::~PDBReader()
@@ -122,6 +123,11 @@ void PDBReader::parse() {
             break;
         }
     }
+    done_ = true;
+}
+
+bool PDBReader::isParsingDone() {
+    return done_;
 }
 
 void PDBReader::parsePDB() {
