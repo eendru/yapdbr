@@ -100,6 +100,18 @@ bool compareAtomsLists(atomsList &fromYAPDBR, atomsList &realCoords) {
    return true;
 }
 
+bool compareStringInfoById(YAPDBR &r) {
+    std::string info;
+    size_t id = 2;
+
+    r.getInfoStringAboutAtomById(info, id);
+    std::cerr << info;
+    if (info == data[2])
+        return true;
+    else
+        return false;
+}
+
 bool test()
 {
     YAPDBR r(data);
@@ -123,7 +135,10 @@ bool test()
     if (bCB)
         std::cout << "            Passed\n";
 
-    return bAll && bCA && bCB;
+    bool bID = compareStringInfoById(r);
+
+
+    return bAll && bCA && bCB && bID;
 }
 
 int main () {

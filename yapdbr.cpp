@@ -40,6 +40,14 @@ atom_type_t getAtomType(std::string &line) {
         return it->second;
 }
 
+void YAPDBR::getInfoStringAboutAtomById(std::string& info, size_t id) {
+    try {
+        info = data_.at(id);
+    } catch (std::out_of_range &e) {
+        std::cerr << "Index " << id << " out of range at map\n";
+    }
+}
+
 static double stringToDouble(std::string s) {
     double result;
     std::stringstream ss;
@@ -74,12 +82,16 @@ atomsList YAPDBR::asList(std::string format) {
     atomsList result;
     std::map<int, std::string>::iterator itb = data_.begin(), ite = data_.end();
 
+    size_t i = 0;
     if (format == "ALL") {
         for (itb = data_.begin(); itb != ite; ++itb) {
+            carbonIdToPDBId_[i] = i;
             coordinates_t tmp = toCoordinates(itb->second);
             result.push_back(tmp);
+            i++;
         }
-    } else { 
+    } else {
+        size_t j = 0;
         for (itb = data_.begin(); itb != ite; ++itb) {
             atom_type_t type;
             
@@ -91,9 +103,12 @@ atomsList YAPDBR::asList(std::string format) {
             }
            
             if (type == it->second) {
+                carbonIdToPDBId_[j] = i;
                 coordinates_t tmp = toCoordinates(itb->second);
                 result.push_back(tmp);
+                j++;
             }
+            i++;
         }
     }
 

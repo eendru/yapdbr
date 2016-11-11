@@ -50,9 +50,13 @@ public:
     atomsList asList(std::string format = "ALL");
     atomsVector asVector(std::string format = "ALL");
     bool isFinished();
+    void getInfoStringAboutAtomById(std::string& info, size_t id);
+
 private:
     coordinates_t toCoordinates(std::string &line);
+    void buildInfoDurinParsing();
 
+    std::map<size_t, size_t> carbonIdToPDBId_;
     std::map<int, std::string> data_;
     bool finished_;
 };
