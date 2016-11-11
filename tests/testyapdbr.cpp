@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream>
 #include <map>
+#include <utility>
 
 std::map<int, std::string> data;
 void initMap() {
@@ -29,39 +30,39 @@ void initMap() {
 atomsList All_Coords;
 void initAllAtomsList() {
     All_Coords.clear();
-    All_Coords.push_back(std::make_tuple(23.612, 8.367,  -9.458));   // N
-    All_Coords.push_back(std::make_tuple(23.871, 9.800,  -9.365));   // CA
-    All_Coords.push_back(std::make_tuple(25.258, 10.146, -9.871));   // C
-    All_Coords.push_back(std::make_tuple(26.193, 9.343,  -9.767));   // O
-    All_Coords.push_back(std::make_tuple(23.749, 10.277, -7.931));   // CB
-    All_Coords.push_back(std::make_tuple(24.625, 11.379, -5.216));   // CE
-    All_Coords.push_back(std::make_tuple(25.410, 11.314, -10.492));  // N
-    All_Coords.push_back(std::make_tuple(26.714, 11.686, -11.004));  // CA
-    All_Coords.push_back(std::make_tuple(26.993, 13.165, -10.812));  // C
-    All_Coords.push_back(std::make_tuple(26.274, 14.013, -11.332));  // O
-    All_Coords.push_back(std::make_tuple(26.807, 11.327, -12.493));  // CB
-    All_Coords.push_back(std::make_tuple(26.413, 9.872,  -12.704));  // CG2
-    All_Coords.push_back(std::make_tuple(28.106, 13.504, -10.166));  // N
-    All_Coords.push_back(std::make_tuple(28.441, 14.899, -9.950));   // CA
-    All_Coords.push_back(std::make_tuple(29.165, 15.513, -11.144));  // C
-    All_Coords.push_back(std::make_tuple(29.774, 14.817, -11.960));  // O
-    All_Coords.push_back(std::make_tuple(29.360, 15.038, -8.744));   // CB
+    All_Coords.push_back(std::make_pair(std::make_tuple(23.612, 8.367,  -9.458), 1));   // N
+    All_Coords.push_back(std::make_pair(std::make_tuple(23.871, 9.800,  -9.365), 2));   // CA
+    All_Coords.push_back(std::make_pair(std::make_tuple(25.258, 10.146, -9.871), 3));   // C
+    All_Coords.push_back(std::make_pair(std::make_tuple(26.193, 9.343,  -9.767), 4));   // O
+    All_Coords.push_back(std::make_pair(std::make_tuple(23.749, 10.277, -7.931), 5));   // CB
+    All_Coords.push_back(std::make_pair(std::make_tuple(24.625, 11.379, -5.216), 6));   // CE
+    All_Coords.push_back(std::make_pair(std::make_tuple(25.410, 11.314, -10.492), 7));  // N
+    All_Coords.push_back(std::make_pair(std::make_tuple(26.714, 11.686, -11.004), 8));  // CA
+    All_Coords.push_back(std::make_pair(std::make_tuple(26.993, 13.165, -10.812), 9));  // C
+    All_Coords.push_back(std::make_pair(std::make_tuple(26.274, 14.013, -11.332), 10));  // O
+    All_Coords.push_back(std::make_pair(std::make_tuple(26.807, 11.327, -12.493), 11));  // CB
+    All_Coords.push_back(std::make_pair(std::make_tuple(26.413, 9.872,  -12.704), 12));  // CG2
+    All_Coords.push_back(std::make_pair(std::make_tuple(28.106, 13.504, -10.166), 13));  // N
+    All_Coords.push_back(std::make_pair(std::make_tuple(28.441, 14.899, -9.950), 14));   // CA
+    All_Coords.push_back(std::make_pair(std::make_tuple(29.165, 15.513, -11.144), 15));  // C
+    All_Coords.push_back(std::make_pair(std::make_tuple(29.774, 14.817, -11.960), 16));  // O
+    All_Coords.push_back(std::make_pair(std::make_tuple(29.360, 15.038, -8.744), 17));   // CB
 }
 
 atomsList CA_Coords;
 void initCA_AtomsList() {
     CA_Coords.clear();
-    CA_Coords.push_back(std::make_tuple(23.871, 9.800,  -9.365));   // CA
-    CA_Coords.push_back(std::make_tuple(26.714, 11.686, -11.004));  // CA
-    CA_Coords.push_back(std::make_tuple(28.441, 14.899, -9.950));   // CA
+    CA_Coords.push_back(std::make_pair(std::make_tuple(23.871, 9.800,  -9.365), 2));   // CA
+    CA_Coords.push_back(std::make_pair(std::make_tuple(26.714, 11.686, -11.004), 8));  // CA
+    CA_Coords.push_back(std::make_pair(std::make_tuple(28.441, 14.899, -9.950), 14));   // CA
 }
 
 atomsList CB_Coords;
 void initCB_AtomsList() {
     CB_Coords.clear();
-    CB_Coords.push_back(std::make_tuple(23.749, 10.277, -7.931));   // CB
-    CB_Coords.push_back(std::make_tuple(26.807, 11.327, -12.493));  // CB
-    CB_Coords.push_back(std::make_tuple(29.360, 15.038, -8.744));   // CB
+    CB_Coords.push_back(std::make_pair(std::make_tuple(23.749, 10.277, -7.931), 5));   // CB
+    CB_Coords.push_back(std::make_pair(std::make_tuple(26.807, 11.327, -12.493), 11));  // CB
+    CB_Coords.push_back(std::make_pair(std::make_tuple(29.360, 15.038, -8.744), 17));   // CB
 }
 
 double eps = 0.001;
@@ -80,21 +81,22 @@ bool compareAtomsLists(atomsList &fromYAPDBR, atomsList &realCoords) {
     atomsList::iterator itl = realCoords.begin(), ile = realCoords.end();
 
     for (; itc != ite; ++itc, ++itl) {
-        if (fabs(std::get<0>(*itc) - std::get<0>(*itl)) > eps) {
-            std::cout << "Fail at: " << std::get<0>(*itc) << " and " << std::get<0>(*itl);
+        if (fabs(std::get<0>((*itc).first) - std::get<0>((*itl).first)) > eps) {
+            std::cout << "Fail at: " << std::get<0>((*itc).first) << " and " << std::get<0>((*itl).first);
             result = false;
         }
 
-        if (fabs(std::get<1>(*itc) - std::get<1>(*itl)) > eps) {
-            std::cout << "Fail at: " << std::get<1>(*itc) << " and " << std::get<1>(*itl);
+        if (fabs(std::get<1>((*itc).first) - std::get<1>((*itl).first)) > eps) {
+            std::cout << "Fail at: " << std::get<1>((*itc).first) << " and " << std::get<1>((*itl).first);
             result = false;
         }
 
 
-        if (fabs(std::get<2>(*itc) - std::get<2>(*itl)) > eps) {
-            std::cout << "Fail at: " << std::get<2>(*itc) << " and " << std::get<2>(*itl);
+        if (fabs(std::get<2>((*itc).first) - std::get<2>((*itl).first)) > eps) {
+            std::cout << "Fail at: " << std::get<2>((*itc).first) << " and " << std::get<2>((*itl).first);
             result = false;
         }
+
     }
 
    return true;

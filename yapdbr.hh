@@ -5,9 +5,10 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <utility>
 
 typedef std::tuple<double, double, double> coordinates_t;
-typedef std::list<coordinates_t> atomsList;
+typedef std::list<std::pair<coordinates_t, int >> atomsList;
 typedef std::vector<coordinates_t> atomsVector;
 
 // This enum is used as format for what we need.
@@ -73,11 +74,13 @@ public:
      * Each string in pdb file which started with ATOM indexed
      */
     void getInfoStringAboutAtomById(std::string& info, size_t id);
+
 private:
     /*
      * Parse line of pdb file with coordinates to double-coordinates
      */
     coordinates_t toCoordinates(std::string &line);
+    int getPDBId(std::string &line);
 
 
     std::map<size_t, size_t> carbonIdToPDBId_;

@@ -91,6 +91,11 @@ coordinates_t YAPDBR::toCoordinates(std::string &line) {
     return std::make_tuple(x, y, z);
 }
 
+int YAPDBR::getPDBId(std::string &line) {
+/*     7 - 11        Integer         serial        Atom serial number. */
+    return std::stoi(line.substr(6, 10));
+}
+
 void YAPDBR::getList(atomsList &result) {
     result = result_;
 }
@@ -110,7 +115,8 @@ void YAPDBR::asList(std::string format) {
         for (itb = data_.begin(); itb != ite; ++itb) {
             carbonIdToPDBId_[i] = i;
             coordinates_t tmp = toCoordinates(itb->second);
-            result_.push_back(tmp);
+            int x = getPDBId(itb->second);
+            result_.push_back(std::make_pair(tmp, x));
             i++;
         }
     } else {
@@ -128,7 +134,8 @@ void YAPDBR::asList(std::string format) {
             if (type == it->second) {
                 carbonIdToPDBId_[j] = i;
                 coordinates_t tmp = toCoordinates(itb->second);
-                result_.push_back(tmp);
+                int x = getPDBId(itb->second);
+                result_.push_back(std::make_pair(tmp, x));
                 j++;
             }
             i++;
