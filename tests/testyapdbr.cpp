@@ -115,10 +115,17 @@ bool compareStringInfoById(YAPDBR &r) {
 bool test()
 {
     YAPDBR r(data);
-    atomsList all = r.asList("ALL");
-    atomsList ca = r.asList("CA");
-    atomsList cb = r.asList("CB");
-    
+    atomsList all, ca, cb;
+
+    r.asList("ALL");
+    r.getList(all);
+
+    r.asList("CA");
+    r.getList(ca);
+
+    r.asList("CB");
+    r.getList(cb);
+
     std::cout << "Check all atoms: \n";
     atomsList::iterator itc = All_Coords.begin(), ite = All_Coords.end();
     bool bAll = compareAtomsLists(all, All_Coords);

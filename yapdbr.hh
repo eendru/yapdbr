@@ -47,17 +47,42 @@ atom_type_t getAtomType(std::string &line);
 class YAPDBR {
 public:
     YAPDBR(std::map<int, std::string>& data);
-    atomsList asList(std::string format = "ALL");
-    atomsVector asVector(std::string format = "ALL");
-    bool isFinished();
-    void getInfoStringAboutAtomById(std::string& info, size_t id);
 
+    /*
+     * Get data with given format in std::list of std::tuples
+     */
+    void asList(std::string format = "ALL");
+
+    /*
+     * Get list builded with asList() function
+     */
+    void getList(atomsList &result);
+
+    /*
+     * Is asList() function finished correctly
+     */
+    bool isFinished();
+
+    /*
+     * @return std::map with key = id in list, value = id of record in ATOM-started lines
+     */
+    void getCarbonIdToInfoMap(std::map<size_t, std::string> &result);
+
+    /*
+     * Get info from pdb file by atom-record number
+     * Each string in pdb file which started with ATOM indexed
+     */
+    void getInfoStringAboutAtomById(std::string& info, size_t id);
 private:
+    /*
+     * Parse line of pdb file with coordinates to double-coordinates
+     */
     coordinates_t toCoordinates(std::string &line);
-    void buildInfoDurinParsing();
+
 
     std::map<size_t, size_t> carbonIdToPDBId_;
     std::map<int, std::string> data_;
+    atomsList result_;
     bool finished_;
 };
 

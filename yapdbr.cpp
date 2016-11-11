@@ -48,6 +48,24 @@ void YAPDBR::getInfoStringAboutAtomById(std::string& info, size_t id) {
     }
 }
 
+void YAPDBR::getCarbonIdToInfoMap(std::map<size_t, std::string> &result) {
+    if (!finished_)  {
+        std::cerr << "Vector building is not finished yet";
+        return;
+    }
+
+    for (int i = 0; i < result_.size(); ++i) {
+        int j = carbonIdToPDBId_[i];
+        try {
+            result[i] = (data_.at(j));
+        } catch (std::out_of_range &e) {
+            std::cerr << "Out of range with index " << j;
+            result.clear();
+            return;
+        }
+    }
+}
+
 static double stringToDouble(std::string s) {
     double result;
     std::stringstream ss;
@@ -73,13 +91,18 @@ coordinates_t YAPDBR::toCoordinates(std::string &line) {
     return std::make_tuple(x, y, z);
 }
 
-atomsList YAPDBR::asList(std::string format) {
+void YAPDBR::getList(atomsList &result) {
+    result = result_;
+}
+
+void YAPDBR::asList(std::string format) {
     string_atom_type_map_t::const_iterator it = type_atom_map.find(format);
+    finished_ = false;
+    result_.clear();
     
     if (it == type_atom_map.end())
         throw std::string("Format can't be interpreted");
     
-    atomsList result;
     std::map<int, std::string>::iterator itb = data_.begin(), ite = data_.end();
 
     size_t i = 0;
@@ -87,7 +110,7 @@ atomsList YAPDBR::asList(std::string format) {
         for (itb = data_.begin(); itb != ite; ++itb) {
             carbonIdToPDBId_[i] = i;
             coordinates_t tmp = toCoordinates(itb->second);
-            result.push_back(tmp);
+            result_.push_back(tmp);
             i++;
         }
     } else {
@@ -105,7 +128,7 @@ atomsList YAPDBR::asList(std::string format) {
             if (type == it->second) {
                 carbonIdToPDBId_[j] = i;
                 coordinates_t tmp = toCoordinates(itb->second);
-                result.push_back(tmp);
+                result_.push_back(tmp);
                 j++;
             }
             i++;
@@ -113,18 +136,8 @@ atomsList YAPDBR::asList(std::string format) {
     }
 
     finished_ = true;
-    return result;
 }
 
 bool YAPDBR::isFinished() {
     return finished_;
-}
-
-// TODO don't usr asList()
-atomsVector YAPDBR::asVector(std::string format) {
-    atomsList t = asList(format);
-    atomsVector result;
-    std::copy(t.begin(), t.end(), back_inserter(result));
-
-    return result;
 }
