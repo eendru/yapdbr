@@ -40,32 +40,6 @@ atom_type_t getAtomType(std::string &line) {
         return it->second;
 }
 
-void YAPDBR::getInfoStringAboutAtomById(std::string& info, size_t id) {
-    try {
-        info = data_.at(id);
-    } catch (std::out_of_range &e) {
-        std::cerr << "Index " << id << " out of range at map\n";
-    }
-}
-
-void YAPDBR::getCarbonIdToInfoMap(std::map<size_t, std::string> &result) {
-    if (!finished_)  {
-        std::cerr << "Vector building is not finished yet";
-        return;
-    }
-
-    for (int i = 0; i < result_.size(); ++i) {
-        int j = carbonIdToPDBId_[i];
-        try {
-            result[i] = (data_.at(j));
-        } catch (std::out_of_range &e) {
-            std::cerr << "Out of range with index " << j;
-            result.clear();
-            return;
-        }
-    }
-}
-
 static double stringToDouble(std::string s) {
     double result;
     std::stringstream ss;
@@ -96,16 +70,20 @@ int YAPDBR::getPDBId(std::string &line) {
     return std::stoi(line.substr(6, 10));
 }
 
+void YAPDBR::getInfoLineByPDBId(std::string &result, size_t id) {
+    result = data_.at(id);
+}
+
 void YAPDBR::getList(atomsList &result) {
     result = result_;
 }
 
 void YAPDBR::asList(std::string format) {
-    string_atom_type_map_t::const_iterator it = type_atom_map.find(format);
+    string_atom_type_map_t::const_iterator format_type = type_atom_map.find(format);
     finished_ = false;
     result_.clear();
     
-    if (it == type_atom_map.end())
+    if (format_type == type_atom_map.end())
         throw std::string("Format can't be interpreted");
     
     std::map<int, std::string>::iterator itb = data_.begin(), ite = data_.end();
@@ -113,7 +91,7 @@ void YAPDBR::asList(std::string format) {
     size_t i = 0;
     if (format == "ALL") {
         for (itb = data_.begin(); itb != ite; ++itb) {
-            carbonIdToPDBId_[i] = i;
+            carbonIdToPDBId_[i] = i + 1;
             coordinates_t tmp = toCoordinates(itb->second);
             int x = getPDBId(itb->second);
             result_.push_back(std::make_pair(tmp, x));
@@ -121,6 +99,7 @@ void YAPDBR::asList(std::string format) {
         }
     } else {
         size_t j = 0;
+        i = 1;
         for (itb = data_.begin(); itb != ite; ++itb) {
             atom_type_t type;
             
@@ -131,7 +110,7 @@ void YAPDBR::asList(std::string format) {
                 continue;
             }
            
-            if (type == it->second) {
+            if (type == format_type->second) {
                 carbonIdToPDBId_[j] = i;
                 coordinates_t tmp = toCoordinates(itb->second);
                 int x = getPDBId(itb->second);

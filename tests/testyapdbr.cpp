@@ -102,18 +102,6 @@ bool compareAtomsLists(atomsList &fromYAPDBR, atomsList &realCoords) {
    return true;
 }
 
-bool compareStringInfoById(YAPDBR &r) {
-    std::string info;
-    size_t id = 2;
-
-    r.getInfoStringAboutAtomById(info, id);
-    std::cerr << info;
-    if (info == data[2])
-        return true;
-    else
-        return false;
-}
-
 bool test()
 {
     YAPDBR r(data);
@@ -127,14 +115,6 @@ bool test()
 
     r.asList("CB");
     r.getList(cb);
-    std::map<size_t, std::string> result;
-    r.getCarbonIdToInfoMap(result);
-
-    bool citim = false;
-    if (std::atoi(result.at(0).substr(6, 10).c_str()) == std::atoi(data.at(4).substr(6, 10).c_str())) {
-        std::cout << "CarbonIdToInfoMap test passed \n";
-        citim = true;
-    }
 
     std::cout << "Check all atoms: \n";
     atomsList::iterator itc = All_Coords.begin(), ite = All_Coords.end();
@@ -152,10 +132,8 @@ bool test()
     if (bCB)
         std::cout << "            Passed\n";
 
-    bool bID = compareStringInfoById(r);
 
-
-    return bAll && bCA && bCB && bID && citim;
+    return bAll && bCA && bCB;
 }
 
 int main () {

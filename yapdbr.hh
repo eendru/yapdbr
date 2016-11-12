@@ -50,7 +50,7 @@ public:
     YAPDBR(std::map<int, std::string>& data);
 
     /*
-     * Get data with given format in std::list of std::tuples
+     * Build data with given format in std::list of std::tuples
      */
     void asList(std::string format = "ALL");
 
@@ -60,20 +60,11 @@ public:
     void getList(atomsList &result);
 
     /*
-     * Is asList() function finished correctly
+     * If asList() function finished correctly
      */
     bool isFinished();
 
-    /*
-     * @return std::map with key = id in list, value = id of record in ATOM-started lines
-     */
-    void getCarbonIdToInfoMap(std::map<size_t, std::string> &result);
-
-    /*
-     * Get info from pdb file by atom-record number
-     * Each string in pdb file which started with ATOM indexed
-     */
-    void getInfoStringAboutAtomById(std::string& info, size_t id);
+    void getInfoLineByPDBId(std::string &result, size_t id);
 
 private:
     /*
@@ -81,7 +72,6 @@ private:
      */
     coordinates_t toCoordinates(std::string &line);
     int getPDBId(std::string &line);
-
 
     std::map<size_t, size_t> carbonIdToPDBId_;
     std::map<int, std::string> data_;

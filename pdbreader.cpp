@@ -87,6 +87,8 @@ std::map<int, std::string>& PDBReader::getData() {
 void PDBReader::parse() {
     std::string line;
     PDB_LINE_E type;
+    std::string zeroEntryString = "This is test string for data_[0]";
+    data_.insert(std::make_pair(0, zeroEntryString));
 
     while (std::getline(is_, line)) {
         std::string strType = getStringTypeOfLine(line);
@@ -109,7 +111,7 @@ void PDBReader::parse() {
 
         case (ATOM): {
             int key = std::atoi(line.substr(6, 10).c_str());
-	        data_[key] = line;
+            data_.insert(std::make_pair(key, line));
             break;
         }
 
@@ -117,8 +119,8 @@ void PDBReader::parse() {
             break;
 
         case (UNKNOWN):
-	        std::cerr << "Something bad with your pdb at line " << line << "\n";
-	        continue;
+            std::cerr << "Something bad with your pdb at line " << line << "\n";
+            continue;
         default:
             break;
         }
