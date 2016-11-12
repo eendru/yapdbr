@@ -127,6 +127,14 @@ bool test()
 
     r.asList("CB");
     r.getList(cb);
+    std::map<size_t, std::string> result;
+    r.getCarbonIdToInfoMap(result);
+
+    bool citim = false;
+    if (std::atoi(result.at(0).substr(6, 10).c_str()) == std::atoi(data.at(4).substr(6, 10).c_str())) {
+        std::cout << "CarbonIdToInfoMap test passed \n";
+        citim = true;
+    }
 
     std::cout << "Check all atoms: \n";
     atomsList::iterator itc = All_Coords.begin(), ite = All_Coords.end();
@@ -147,7 +155,7 @@ bool test()
     bool bID = compareStringInfoById(r);
 
 
-    return bAll && bCA && bCB && bID;
+    return bAll && bCA && bCB && bID && citim;
 }
 
 int main () {
