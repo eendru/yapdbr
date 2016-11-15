@@ -106,7 +106,6 @@ void YAPDBR::asList(std::string format) {
             type = getAtomType(itb->second);
             if (type == UNKN) {
                 // TODO error.log or something ?
-                std::cerr << "[Warning] Unknow type at line " << itb->second << "\n";
                 continue;
             }
            

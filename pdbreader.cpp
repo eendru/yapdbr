@@ -89,13 +89,13 @@ void PDBReader::parse() {
     PDB_LINE_E type;
     std::string zeroEntryString = "This is test string for data_[0]";
     data_.insert(std::make_pair(0, zeroEntryString));
-
+    long unsigned int i = 0;
     while (std::getline(is_, line)) {
         std::string strType = getStringTypeOfLine(line);
         try {
             type = line_names.at(strType);
         } catch(std::exception &e) {
-            std::cerr << e.what() << " troubles with parsing " << line << std::endl;
+            //std::cerr << e.what() << " troubles with parsing " << line << std::endl;
             type = UNKNOWN;
         }
 
@@ -119,13 +119,14 @@ void PDBReader::parse() {
             break;
 
         case (UNKNOWN):
-            std::cerr << "Something bad with your pdb at line " << line << "\n";
+            i++;
             continue;
         default:
             break;
         }
     }
     done_ = true;
+    std::cerr << "UNKNOWN lines " << i << "\n";
 }
 
 bool PDBReader::isParsingDone() {
