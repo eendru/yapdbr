@@ -126,7 +126,7 @@ void PDBReader::parse() {
         }
     }
     done_ = true;
-    std::cerr << "UNKNOWN lines " << i << "\n";
+    std::cerr << "Number of UNKNOWN lines " << i << "\n";
 }
 
 bool PDBReader::isParsingDone() {
