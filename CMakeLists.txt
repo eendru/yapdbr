@@ -1,31 +1,26 @@
 cmake_minimum_required(VERSION 3.2)
-
-set(LIBRARY_NAME YAPDBR)
+set(LIBRARY_NAME "YAPDBR")
+project(${LIBRARY_NAME})
 
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set(SOURCE_YAPDBR
     pdbreader.cpp
     yapdbr.cpp
 )
 
-set(HEADERS_YAPDBR
-    pdbreader.hh
-    yapdbr.hh
-)
+add_library(${LIBRARY_NAME} SHARED
+            ${SOURCE_YAPDBR})
 
-project(${LIBRARY_NAME})
-
-add_library( ${LIBRARY_NAME} STATIC
-             ${HEADERS_YAPDBR}
-             ${SOURCE_YAPDBR}
-           )
-
-target_include_directories(${LIBRARY_NAME} PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>)
-
-target_include_directories(${LIBRARY_NAME} PRIVATE
-         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${LIBRARY_NAME}> )
 
 enable_testing()
-add_subdirectory(tests)
+set(TEST_YAPDBR_NAME
+	"yapdbr_test")
+
+set(TEST_YAPDBR_SOURCE
+	testyapdbr.cpp)
+
+add_executable(${TEST_YAPDBR_NAME} ${TEST_YAPDBR_SOURCE})
+target_link_libraries(${TEST_YAPDBR_NAME} PRIVATE ${LIBRARY_NAME})
+add_test(${TEST_YAPDBR_NAME} ${TEST_YAPDBR_NAME})

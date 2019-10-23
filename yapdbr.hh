@@ -8,7 +8,7 @@
 #include <utility>
 
 typedef std::tuple<double, double, double> coordinates_t;
-typedef std::list<std::pair<coordinates_t, int >> atomsList;
+typedef std::list<std::pair<coordinates_t, int >> atoms_list_t;
 typedef std::vector<coordinates_t> atomsVector;
 
 // This enum is used as format for what we need.
@@ -52,30 +52,18 @@ public:
     /*
      * Build data with given format in std::list of std::tuples
      */
-    void asList(std::string format = "ALL");
+    atoms_list_t asList(std::string format = "ALL");
 
-    /*
-     * Get list builded with asList() function
-     */
-    void getList(atomsList &result);
-
-    /*
-     * If asList() function finished correctly
-     */
-    bool isFinished();
-
-    void getInfoLineByPDBId(std::string &result, size_t id);
+    void info_by_pdbid(std::string &result, size_t id);
 
 private:
     /*
      * Parse line of pdb file with coordinates to double-coordinates
      */
-    coordinates_t toCoordinates(std::string &line);
-    int getPDBId(std::string &line);
+    coordinates_t to_coordinates(std::string &line);
+    int atom_serial_number(std::string &line);
 
-    std::map<size_t, size_t> carbonIdToPDBId_;
+    std::map<size_t, size_t> carbon_id_to_pdbid_map_;
     std::map<int, std::string> data_;
-    atomsList result_;
-    bool finished_;
 };
 
