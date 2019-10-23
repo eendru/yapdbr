@@ -46,10 +46,9 @@ static const std::map<std::string, PDB_LINE_E> line_names = {
     {"UNKNOWN", UNKNOWN},
 };
 
-static std::string
-getStringTypeOfLine(std::string &line) {
+static std::string line_type(const std::string &line) {
     std::string result;
-    for (auto c : line){
+    for (const auto &c : line){
         if (c == ' ')
             break;
         else
@@ -59,20 +58,11 @@ getStringTypeOfLine(std::string &line) {
     return result;
 }
 
-PDBReader::PDBReader(std::string &file)
-{
-    file_ = file;
-    done_ = false;
-}
-
-PDBReader::~PDBReader()
-{
-
-}
-void PDBReader::open() {
+void PDBReader::open(const std::string &filename) {
+    file_ = filename;
     is_.open(file_, std::ios::in);
     if (!is_.is_open()) {
-        throw std::string("Can't open file");
+        throw std::string("Can't open file '") + file_.c_str() + std::string("'");
     }
 }
 
@@ -80,7 +70,7 @@ void PDBReader::close() {
     is_.close();
 }
 
-std::map<int, std::string>& PDBReader::getData() {
+std::map<int, std::string>& PDBReader::data() {
     return data_;
 }
 
@@ -90,24 +80,17 @@ void PDBReader::parse() {
     std::string zeroEntryString = "This is test string for data_[0]";
     data_.insert(std::make_pair(0, zeroEntryString));
     long unsigned int i = 0;
+
     while (std::getline(is_, line)) {
-        std::string strType = getStringTypeOfLine(line);
-        try {
-            type = line_names.at(strType);
-        } catch(std::exception &e) {
-            //std::cerr << e.what() << " troubles with parsing " << line << std::endl;
+        std::string str_type = line_type(line);
+        auto it = line_names.find(str_type);
+        if (it == line_names.end()) {
             type = UNKNOWN;
+        } else {
+            type = it->second;
         }
 
         switch(type) {
-        case (HEADER):
-            break;
-
-        case (HET):
-            break;
-
-        case (MODEL):
-            break;
 
         case (ATOM): {
             int key = std::atoi(line.substr(6, 10).c_str());
@@ -115,30 +98,28 @@ void PDBReader::parse() {
             break;
         }
 
-        case (HETATM):
-            break;
-
         case (UNKNOWN):
             i++;
-            continue;
+            break;
+
+        case (HEADER):
+        case (HET):
+        case (MODEL):
+        case (HETATM):
         default:
             break;
         }
     }
-    done_ = true;
     std::cerr << "Number of UNKNOWN lines " << i << "\n";
 }
 
-bool PDBReader::isParsingDone() {
-    return done_;
-}
-
-void PDBReader::parsePDB() {
+void PDBReader::load(const std::string &filename) {
     try {
-        open();
+        open(filename);
     } catch (std::string &s) {
-            std::cerr << s << " ";
-            return;
+        std::cerr << s << " ";
+        close();
+        throw s;
     }
     parse();
     close();

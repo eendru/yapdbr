@@ -8,20 +8,19 @@
 
 class PDBReader {
 public:
-    PDBReader(std::string &file);
-    ~PDBReader();
-    void parsePDB();
-    bool isParsingDone();
+    PDBReader() = default;
+    ~PDBReader() = default;
 
-    std::map<int, std::string>& getData();
+    void load(const std::string &filename);
+
+    std::map<int, std::string>& data();
 
 private:
     std::string file_;
     std::ifstream is_;
     std::map<int, std::string> data_;
-    bool done_;
 
-    void open();
+    void open(const std::string &filename);
     void close();
     void parse();
 };

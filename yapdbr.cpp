@@ -1,8 +1,8 @@
 #include "yapdbr.hh"
 #include <sstream>
 #include <iostream>
-#include <algorithm> 
-#include <functional> 
+#include <algorithm>
+#include <functional>
 #include <cctype>
 #include <locale>
 
@@ -26,30 +26,21 @@ static inline std::string &trim(std::string &s) {
 
 YAPDBR::YAPDBR(std::map<int, std::string> &data) {
     data_ = data;
-    finished_ = false;
 }
 
-atom_type_t getAtomType(std::string &line) {
+atom_type_t get_atom_type(std::string &line) {
     std::string s_type = line.substr(12, 4);
     std::string s_type_trimmed = trim(s_type);
     string_atom_type_map_t::const_iterator it = type_atom_map.find(s_type_trimmed);
 
-    if (it == type_atom_map.end())
+    if (it == type_atom_map.end()) {
         return UNKN;
-    else
+    } else {
         return it->second;
+    }
 }
 
-static double stringToDouble(std::string s) {
-    double result;
-    std::stringstream ss;
-
-    ss << s;
-    ss >> result;
-    return result;
-}
-
-coordinates_t YAPDBR::toCoordinates(std::string &line) { 
+coordinates_t YAPDBR::to_coordinates(std::string &line) {
 /* 31 - 38        Real(8.3)       x             Orthogonal coordinates for X in
  *                                              Angstroms.
  * 39 - 46        Real(8.3)       y             Orthogonal coordinates for Y in
@@ -57,72 +48,53 @@ coordinates_t YAPDBR::toCoordinates(std::string &line) {
  * 47 - 54        Real(8.3)       z             Orthogonal coordinates for Z in
  *                                              Angstroms.
  */
-    double x = 0.0, y = 0.0, z = 0.0;
-    x = stringToDouble(line.substr(30, 8));
-    y = stringToDouble(line.substr(38, 8));
-    z = stringToDouble(line.substr(46, 8));
+    double x = std::stod(line.substr(30, 8));
+    double y = std::stod(line.substr(38, 8));
+    double z = std::stod(line.substr(46, 8));
 
     return std::make_tuple(x, y, z);
 }
 
-int YAPDBR::getPDBId(std::string &line) {
+int YAPDBR::atom_serial_number(std::string &line) {
 /*     7 - 11        Integer         serial        Atom serial number. */
-    return std::stoi(line.substr(6, 10));
+    return std::stoi(line.substr(6, 10)); // TODO 10 ? maybe 6?
 }
 
-void YAPDBR::getInfoLineByPDBId(std::string &result, size_t id) {
+void YAPDBR::info_by_pdbid(std::string &result, size_t id) {
     result = data_.at(id);
 }
 
-void YAPDBR::getList(atomsList &result) {
-    result = result_;
-}
-
-void YAPDBR::asList(std::string format) {
+atoms_list_t YAPDBR::asList(std::string format) {
     string_atom_type_map_t::const_iterator format_type = type_atom_map.find(format);
-    finished_ = false;
-    result_.clear();
-    
-    if (format_type == type_atom_map.end())
-        throw std::string("Format can't be interpreted");
-    
+
+    if (format_type == type_atom_map.end()) {
+        throw "Format can't be interpreted";
+    }
+
+    atoms_list_t result;
     std::map<int, std::string>::iterator itb = data_.begin(), ite = data_.end();
 
     size_t i = 0;
     if (format == "ALL") {
         for (itb = data_.begin(); itb != ite; ++itb) {
-            carbonIdToPDBId_[i] = i + 1;
-            coordinates_t tmp = toCoordinates(itb->second);
-            int x = getPDBId(itb->second);
-            result_.push_back(std::make_pair(tmp, x));
+            carbon_id_to_pdbid_map_[i] = i + 1;
+            coordinates_t tmp = to_coordinates(itb->second);
+            int x = atom_serial_number(itb->second);
+            result.push_back(std::make_pair(tmp, x));
             i++;
         }
     } else {
         size_t j = 0;
         i = 1;
         for (itb = data_.begin(); itb != ite; ++itb) {
-            atom_type_t type;
-            
-            type = getAtomType(itb->second);
-            if (type == UNKN) {
-                // TODO error.log or something ?
-                continue;
-            }
-           
-            if (type == format_type->second) {
-                carbonIdToPDBId_[j] = i;
-                coordinates_t tmp = toCoordinates(itb->second);
-                int x = getPDBId(itb->second);
-                result_.push_back(std::make_pair(tmp, x));
+            if (get_atom_type(itb->second) == format_type->second) {
+                carbon_id_to_pdbid_map_[j] = i;
+                result.push_back(std::make_pair(to_coordinates(itb->second), atom_serial_number(itb->second)));
                 j++;
             }
             i++;
         }
     }
 
-    finished_ = true;
-}
-
-bool YAPDBR::isFinished() {
-    return finished_;
+    return result;
 }
