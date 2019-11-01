@@ -55,6 +55,25 @@ coordinates_t YAPDBR::to_coordinates(std::string &line) {
     return std::make_tuple(x, y, z);
 }
 
+std::string pdb_string_from_coordinates(coordinates_t c, const std::string &original_line)
+{
+    std::string result(original_line);
+
+    std::string x = std::to_string(std::get<0>(c));
+    x.resize(8, 0);
+    result.assign(x, 30, 8);
+
+    x = std::to_string(std::get<0>(c));
+    x.resize(8, 0);
+    result.assign(x, 38, 8);
+
+    x = std::to_string(std::get<0>(c));
+    x.resize(8, 0);
+    result.assign(x, 46, 8);
+
+    return result;
+}
+
 int YAPDBR::atom_serial_number(std::string &line) {
 /*     7 - 11        Integer         serial        Atom serial number. */
     return std::stoi(line.substr(6, 10)); // TODO 10 ? maybe 6?
@@ -97,4 +116,23 @@ atoms_list_t YAPDBR::asList(std::string format) {
     }
 
     return result;
+}
+
+void YAPDBR::set_coords(atoms_list_t &al)
+{
+    std::map<int, std::string>::iterator itm_b = data_.begin(), itm_e = data_.end();
+    atoms_list_t::iterator itl_b = al.begin(), itl_e = al.end();
+
+    size_t i = 0;
+    // Iterate over data map
+    // Check line type
+    //
+    for (itm_b = data_.begin(); itm_b != itm_e; ++itm_b) {
+        if (get_atom_type(itm_b->second) == ATOM_TYPE_E::CA) {
+            if (itl_b != itl_e) {
+                itm_b->second = pdb_string_from_coordinates(itl_b->first, itm_b->second);
+                itl_b ++;
+            }
+        }
+    }
 }

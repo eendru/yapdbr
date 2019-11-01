@@ -7,6 +7,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set(SOURCE_YAPDBR
     pdbreader.cpp
+    pdbwriter.cpp
     yapdbr.cpp
 )
 

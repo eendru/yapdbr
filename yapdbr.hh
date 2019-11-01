@@ -47,12 +47,21 @@ atom_type_t getAtomType(std::string &line);
 
 class YAPDBR {
 public:
+
+   /*
+    * std::map<int, std::string>& data - it's data from pdbreader->load()
+    */
     YAPDBR(std::map<int, std::string>& data);
 
-    /*
-     * Build data with given format in std::list of std::tuples
-     */
+   /*
+    * Build data with given format in std::list of std::tuples
+    */
     atoms_list_t asList(std::string format = "ALL");
+
+   /*
+    * Set only CA atoms im data map
+    */
+    void set_coords(atoms_list_t &al);
 
     void info_by_pdbid(std::string &result, size_t id);
 
