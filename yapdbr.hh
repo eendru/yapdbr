@@ -6,10 +6,32 @@
 #include <list>
 #include <map>
 #include <utility>
+#include <memory>
 
-typedef std::tuple<double, double, double> coordinates_t;
+#include "pdbreader.hh"
+#include "pdbwriter.hh"
+
+typedef struct
+{
+    double x;
+    double y;
+    double z;
+} coordinates;
+
+coordinates operator + (const coordinates& coordinates1, const coordinates& coordinates2);
+coordinates operator - (const coordinates& coordinates1, const coordinates& coordinates2);
+coordinates operator * (const coordinates& coordinates1, double lambda);
+coordinates operator / (const coordinates& coordinates1, double lambda);
+bool operator == (const coordinates & coordinates1, const coordinates & coordinates2);
+double scalar_product(const coordinates& coordinates1, const coordinates& coordinates2);
+coordinates cross_product(const coordinates& coordinates1, const coordinates& coordinates2);
+double euclid_distance(const coordinates& coordinates1, const coordinates& coordinates2);
+double norm(const coordinates &c);
+
+typedef coordinates coordinates_t;
+
+
 typedef std::list<std::pair<coordinates_t, int >> atoms_list_t;
-typedef std::vector<coordinates_t> atomsVector;
 
 // This enum is used as format for what we need.
 // Think about logic expression on this enum
@@ -47,14 +69,33 @@ atom_type_t getAtomType(std::string &line);
 
 class YAPDBR {
 public:
-    YAPDBR(std::map<int, std::string>& data);
 
-    /*
-     * Build data with given format in std::list of std::tuples
-     */
+    YAPDBR() = delete;
+    YAPDBR(const std::string& in_file, const std::string& out_file);
+
+   /*
+    * Build data with given format in std::list of std::tuples
+    */
     atoms_list_t asList(std::string format = "ALL");
 
+   /*
+    * Set only CA atoms im data map
+    */
+    void set_coords(const std::vector<coordinates_t>& al);
+
     void info_by_pdbid(std::string &result, size_t id);
+
+   /*
+    * Load and read file 'in_filename'
+    */
+    void read();
+
+   /*
+    * write data to out_filename
+    */
+    void write();
+
+    std::map<int, std::string> data() { return reader->data();}
 
 private:
     /*
@@ -64,6 +105,11 @@ private:
     int atom_serial_number(std::string &line);
 
     std::map<size_t, size_t> carbon_id_to_pdbid_map_;
-    std::map<int, std::string> data_;
+
+    std::shared_ptr<PDBReader> reader;
+    std::shared_ptr<PDBWriter> writer;
+
+    std::string out_file_;
+    std::string in_file_;
 };
 
