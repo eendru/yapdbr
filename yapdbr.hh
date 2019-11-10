@@ -7,9 +7,27 @@
 #include <map>
 #include <utility>
 
-typedef std::tuple<double, double, double> coordinates_t;
+typedef struct
+{
+    double x;
+    double y;
+    double z;
+} coordinates;
+
+coordinates operator + (const coordinates& coordinates1, const coordinates& coordinates2);
+coordinates operator - (const coordinates& coordinates1, const coordinates& coordinates2);
+coordinates operator * (const coordinates& coordinates1, double lambda);
+coordinates operator / (const coordinates& coordinates1, double lambda);
+bool operator == (const coordinates & coordinates1, const coordinates & coordinates2);
+double scalar_product(const coordinates& coordinates1, const coordinates& coordinates2);
+coordinates cross_product(const coordinates& coordinates1, const coordinates& coordinates2);
+double euclid_distance(const coordinates& coordinates1, const coordinates& coordinates2);
+double norm(const coordinates &c);
+
+typedef coordinates coordinates_t;
+
+
 typedef std::list<std::pair<coordinates_t, int >> atoms_list_t;
-typedef std::vector<coordinates_t> atomsVector;
 
 // This enum is used as format for what we need.
 // Think about logic expression on this enum
@@ -61,9 +79,11 @@ public:
    /*
     * Set only CA atoms im data map
     */
-    void set_coords(atoms_list_t &al);
+    void set_coords(const std::vector<coordinates_t>& al);
 
     void info_by_pdbid(std::string &result, size_t id);
+
+    std::map<int, std::string> data() { return data_;}
 
 private:
     /*

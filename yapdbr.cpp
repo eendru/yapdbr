@@ -5,6 +5,7 @@
 #include <functional>
 #include <cctype>
 #include <locale>
+#include <math.h>
 
 // TODO should be tested
 // trim from start
@@ -52,24 +53,35 @@ coordinates_t YAPDBR::to_coordinates(std::string &line) {
     double y = std::stod(line.substr(38, 8));
     double z = std::stod(line.substr(46, 8));
 
-    return std::make_tuple(x, y, z);
+
+    coordinates_t c;
+    c.x = x;
+    c.y = y;
+    c.z = z;
+    return c;
 }
 
 std::string pdb_string_from_coordinates(coordinates_t c, const std::string &original_line)
 {
     std::string result(original_line);
 
-    std::string x = std::to_string(std::get<0>(c));
+    std::string x = std::to_string((c.x));
     x.resize(8, 0);
-    result.assign(x, 30, 8);
+    for (size_t i = 0; i < 8; ++i) {
+        result[i + 30] = x[i];
+    }
 
-    x = std::to_string(std::get<0>(c));
+    x = std::to_string((c.y));
     x.resize(8, 0);
-    result.assign(x, 38, 8);
+    for (size_t i = 0; i < 8; ++i) {
+        result[i + 38] = x[i];
+    }
 
-    x = std::to_string(std::get<0>(c));
+    x = std::to_string((c.z));
     x.resize(8, 0);
-    result.assign(x, 46, 8);
+    for (size_t i = 0; i < 8; ++i) {
+        result[i + 46] = x[i];
+    }
 
     return result;
 }
@@ -118,10 +130,10 @@ atoms_list_t YAPDBR::asList(std::string format) {
     return result;
 }
 
-void YAPDBR::set_coords(atoms_list_t &al)
+void YAPDBR::set_coords(const std::vector<coordinates_t>& al)
 {
     std::map<int, std::string>::iterator itm_b = data_.begin(), itm_e = data_.end();
-    atoms_list_t::iterator itl_b = al.begin(), itl_e = al.end();
+    std::vector<coordinates_t>::const_iterator itvec_b = al.begin(), itvec_e = al.end();
 
     size_t i = 0;
     // Iterate over data map
@@ -129,10 +141,84 @@ void YAPDBR::set_coords(atoms_list_t &al)
     //
     for (itm_b = data_.begin(); itm_b != itm_e; ++itm_b) {
         if (get_atom_type(itm_b->second) == ATOM_TYPE_E::CA) {
-            if (itl_b != itl_e) {
-                itm_b->second = pdb_string_from_coordinates(itl_b->first, itm_b->second);
-                itl_b ++;
+            if (itvec_b != itvec_e) {
+                itm_b->second = pdb_string_from_coordinates(*itvec_b, itm_b->second);
+                itvec_b ++;
             }
         }
     }
 }
+
+coordinates operator + (const coordinates& coordinates1, const coordinates& coordinates2)
+{
+    coordinates result;
+    result.x = coordinates1.x + coordinates2.x;
+    result.y = coordinates1.y + coordinates2.y;
+    result.z = coordinates1.z + coordinates2.z;
+    return result;
+}
+
+coordinates operator - (const coordinates& coordinates1, const coordinates& coordinates2)
+{
+    coordinates result;
+    result.x = coordinates1.x - coordinates2.x;
+    result.y = coordinates1.y - coordinates2.y;
+    result.z = coordinates1.z - coordinates2.z;
+    return result;
+}
+
+coordinates operator * (const coordinates& coordinates1, double lambda)
+{
+    coordinates result;
+    result.x = coordinates1.x * lambda;
+    result.y = coordinates1.y * lambda;
+    result.z = coordinates1.z * lambda;
+    return result;
+}
+
+coordinates operator / (const coordinates& coordinates1, double lambda)
+{
+    double inv_lambda = 1.0 / lambda;
+    return coordinates1 * inv_lambda;
+}
+
+bool operator == (const coordinates & coordinates1, const coordinates & coordinates2)
+{
+    if ((coordinates1.x == coordinates2.x) &&
+        (coordinates1.y == coordinates2.y) &&
+        (coordinates1.z == coordinates2.z))
+        return true;
+    else
+        return false;
+}
+
+double scalar_product(const coordinates& coordinates1, const coordinates& coordinates2)
+{
+    double result = 0.0;
+    result +=
+        coordinates1.x * coordinates2.x +
+        coordinates1.y * coordinates2.y +
+        coordinates1.z * coordinates2.z;
+    return result;
+}
+
+coordinates cross_product(const coordinates& coordinates1, const coordinates& coordinates2)
+{
+    coordinates result;
+    result.x = coordinates1.y * coordinates2.z - coordinates1.z * coordinates2.y;
+    result.y = coordinates1.z * coordinates2.x - coordinates1.x * coordinates2.z;
+    result.z = coordinates1.x * coordinates2.y - coordinates1.y * coordinates2.x;
+    return result;
+}
+
+double euclid_distance(const coordinates& coordinates1, const coordinates& coordinates2)
+{
+    coordinates tmp = coordinates1 - coordinates2;
+    return sqrt(scalar_product(tmp, tmp));
+}
+
+double norm(const coordinates &c)
+{
+    return sqrt(scalar_product(c, c));
+}
+

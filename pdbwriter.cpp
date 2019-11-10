@@ -7,7 +7,7 @@
 PDBWriter::PDBWriter(const std::string &prefix) : prefix_(prefix)
 {}
 
-void PDBWriter::write(const std::string &original, std::map<int, std::string> &data)
+void PDBWriter::write(const std::string &original, const std::map<int, std::string> &data)
 {
     std::ifstream is1;
     is1.open(original, std::ios::in);
@@ -17,15 +17,17 @@ void PDBWriter::write(const std::string &original, std::map<int, std::string> &d
 
 
     std::ofstream is_wr;
-    std::string filename_to_write(prefix_ + original);
+    std::string filename_to_write(prefix_ + "1ABS.pdb");
     is_wr.open(filename_to_write, std::fstream::out);
+
+    std::cout << "Writing data to '" << filename_to_write << "'" << std::endl;
 
     std::string line;
     PDB_LINE_E type;
 
     while (std::getline(is1, line)) {
         std::string str_type = line_type(line);
-        auto it = line_names.find(str_type);
+        const auto &it = line_names.find(str_type);
 
         if (it == line_names.end()) {
             type = UNKNOWN;
@@ -35,10 +37,12 @@ void PDBWriter::write(const std::string &original, std::map<int, std::string> &d
 
         if (type == PDB_LINE_E::ATOM) {
             int key = std::atoi(line.substr(6, 10).c_str());
-            is_wr.write(data[key].c_str(), data[key].size());
+            is_wr.write(data.at(key).c_str(), data.at(key).size());
+            is_wr << "\n";
         }
         else {
             is_wr.write(line.c_str(), line.size());
+            is_wr << "\n";
         }
     }
 

@@ -64,7 +64,7 @@ public:
     void load(const std::string &filename);
 
    /*
-    * Get std map with key - atom id (int type)
+    * Get std map with key - atom id (int type) in pdb file
     * and value - string(line from pdb file)
     */
     std::map<int, std::string>& data();

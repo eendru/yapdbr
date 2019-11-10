@@ -81,19 +81,19 @@ bool compareAtomsLists(atoms_list_t &fromYAPDBR, atoms_list_t &realCoords) {
     atoms_list_t::iterator itl = realCoords.begin(), ile = realCoords.end();
 
     for (; itc != ite; ++itc, ++itl) {
-        if (fabs(std::get<0>((*itc).first) - std::get<0>((*itl).first)) > eps) {
-            std::cout << "Fail at: " << std::get<0>((*itc).first) << " and " << std::get<0>((*itl).first);
+        if (fabs((*itc).first.x - (*itl).first.x) > eps) {
+            std::cout << "Fail at: " <<((*itc).first.x) << " and " << ((*itl).first.x);
             result = false;
         }
 
-        if (fabs(std::get<1>((*itc).first) - std::get<1>((*itl).first)) > eps) {
-            std::cout << "Fail at: " << std::get<1>((*itc).first) << " and " << std::get<1>((*itl).first);
+        if (fabs(((*itc).first.y) - ((*itl).first.y)) > eps) {
+            std::cout << "Fail at: " << ((*itc).first.y) << " and " << ((*itl).first.y);
             result = false;
         }
 
 
-        if (fabs(std::get<2>((*itc).first) - std::get<2>((*itl).first)) > eps) {
-            std::cout << "Fail at: " << std::get<2>((*itc).first) << " and " << std::get<2>((*itl).first);
+        if (fabs(((*itc).first.z) - ((*itl).first.z)) > eps) {
+            std::cout << "Fail at: " << ((*itc).first.z) << " and " << ((*itl).first.z);
             result = false;
         }
 

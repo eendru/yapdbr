@@ -10,7 +10,7 @@ class PDBWriter {
     ~PDBWriter() = default;
 
     explicit PDBWriter(const std::string &prefix = "new_");
-    void write(const std::string &original, std::map<int, std::string> &data);
+    void write(const std::string &original, const std::map<int, std::string> &data);
 
   private:
     std::string prefix_;
