@@ -6,6 +6,10 @@
 #include <list>
 #include <map>
 #include <utility>
+#include <memory>
+
+#include "pdbreader.hh"
+#include "pdbwriter.hh"
 
 typedef struct
 {
@@ -66,10 +70,8 @@ atom_type_t getAtomType(std::string &line);
 class YAPDBR {
 public:
 
-   /*
-    * std::map<int, std::string>& data - it's data from pdbreader->load()
-    */
-    YAPDBR(std::map<int, std::string>& data);
+    YAPDBR() = delete;
+    YAPDBR(const std::string& in_file, const std::string& out_file);
 
    /*
     * Build data with given format in std::list of std::tuples
@@ -83,7 +85,17 @@ public:
 
     void info_by_pdbid(std::string &result, size_t id);
 
-    std::map<int, std::string> data() { return data_;}
+   /*
+    * Load and read file 'in_filename'
+    */
+    void read();
+
+   /*
+    * write data to out_filename
+    */
+    void write();
+
+    std::map<int, std::string> data() { return reader->data();}
 
 private:
     /*
@@ -93,6 +105,11 @@ private:
     int atom_serial_number(std::string &line);
 
     std::map<size_t, size_t> carbon_id_to_pdbid_map_;
-    std::map<int, std::string> data_;
+
+    std::shared_ptr<PDBReader> reader;
+    std::shared_ptr<PDBWriter> writer;
+
+    std::string out_file_;
+    std::string in_file_;
 };
 

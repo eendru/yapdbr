@@ -4,23 +4,27 @@
 #include <fstream>
 #include "pdbreader.hh"
 
-PDBWriter::PDBWriter(const std::string &prefix) : prefix_(prefix)
+PDBWriter::PDBWriter(const std::string &out_filename) : out_filename_(out_filename)
 {}
 
-void PDBWriter::write(const std::string &original, const std::map<int, std::string> &data)
+void PDBWriter::write(const std::string &orig_filename, const std::map<int, std::string> &data)
 {
     std::ifstream is1;
-    is1.open(original, std::ios::in);
+    is1.open(orig_filename, std::ios::in);
     if (!is1.is_open()) {
-        throw std::string("Can't open file '") + original.c_str() + std::string("'");
+        throw std::string("Can't open file '") + orig_filename.c_str() + std::string("'");
     }
 
 
     std::ofstream is_wr;
-    std::string filename_to_write(prefix_ + "1ABS.pdb");
-    is_wr.open(filename_to_write, std::fstream::out);
+    std::string filename_to_write(out_filename_);
+    is_wr.open(out_filename_, std::fstream::out);
+    if (!is_wr.is_open()) {
+        is1.close();
+        throw std::string("Can't open file '") + out_filename_.c_str() + std::string("'");
+    }
 
-    std::cout << "Writing data to '" << filename_to_write << "'" << std::endl;
+    std::cout << "Writing data to '" << out_filename_<< "'" << std::endl;
 
     std::string line;
     PDB_LINE_E type;

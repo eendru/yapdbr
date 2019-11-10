@@ -2,6 +2,9 @@
 #include <cstring>
 #include <map>
 
+PDBReader::PDBReader(const std::string &in_filename) : in_filename_(in_filename)
+{}
+
 std::string line_type(const std::string &line) {
     std::string result;
     for (const auto &c : line){
@@ -14,11 +17,10 @@ std::string line_type(const std::string &line) {
     return result;
 }
 
-void PDBReader::open(const std::string &filename) {
-    file_ = filename;
-    is_.open(file_, std::ios::in);
+void PDBReader::open() {
+    is_.open(in_filename_, std::ios::in);
     if (!is_.is_open()) {
-        throw std::string("Can't open file '") + file_.c_str() + std::string("'");
+        throw std::string("Can't open file '") + in_filename_.c_str() + std::string("'");
     }
 }
 
@@ -69,9 +71,9 @@ void PDBReader::parse() {
     std::cerr << "Number of UNKNOWN lines " << i << "\n";
 }
 
-void PDBReader::load(const std::string &filename) {
+void PDBReader::load() {
     try {
-        open(filename);
+        open();
     } catch (std::string &s) {
         std::cerr << s << " ";
         close();

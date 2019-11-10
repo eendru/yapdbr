@@ -9,11 +9,11 @@ class PDBWriter {
     PDBWriter() = default;
     ~PDBWriter() = default;
 
-    explicit PDBWriter(const std::string &prefix = "new_");
-    void write(const std::string &original, const std::map<int, std::string> &data);
+    explicit PDBWriter(const std::string &out_filename);
+    void write(const std::string &orig_filename, const std::map<int, std::string> &data);
 
   private:
-    std::string prefix_;
+    std::string out_filename_;
 };
 
 #endif // PDBWRITER_H

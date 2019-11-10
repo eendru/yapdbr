@@ -25,8 +25,23 @@ static inline std::string &trim(std::string &s) {
     return ltrim(rtrim(s));
 }
 
-YAPDBR::YAPDBR(std::map<int, std::string> &data) {
-    data_ = data;
+YAPDBR::YAPDBR(const std::string& in_file, const std::string& out_file) :
+    in_file_(in_file),
+    out_file_(out_file)
+{
+
+    reader = std::make_shared<PDBReader>(in_file);
+    writer = std::make_shared<PDBWriter>(out_file);
+}
+
+void YAPDBR::read()
+{
+    reader->load();
+}
+
+void YAPDBR::write()
+{
+    writer->write(in_file_, reader->data());
 }
 
 atom_type_t get_atom_type(std::string &line) {
@@ -92,7 +107,7 @@ int YAPDBR::atom_serial_number(std::string &line) {
 }
 
 void YAPDBR::info_by_pdbid(std::string &result, size_t id) {
-    result = data_.at(id);
+    result = reader->data().at(id);
 }
 
 atoms_list_t YAPDBR::asList(std::string format) {
@@ -103,11 +118,11 @@ atoms_list_t YAPDBR::asList(std::string format) {
     }
 
     atoms_list_t result;
-    std::map<int, std::string>::iterator itb = data_.begin(), ite = data_.end();
+    std::map<int, std::string>::iterator itb = reader->data().begin(), ite = reader->data().end();
 
     size_t i = 0;
     if (format == "ALL") {
-        for (itb = data_.begin(); itb != ite; ++itb) {
+        for (itb = reader->data().begin(); itb != ite; ++itb) {
             carbon_id_to_pdbid_map_[i] = i + 1;
             coordinates_t tmp = to_coordinates(itb->second);
             int x = atom_serial_number(itb->second);
@@ -117,7 +132,7 @@ atoms_list_t YAPDBR::asList(std::string format) {
     } else {
         size_t j = 0;
         i = 1;
-        for (itb = data_.begin(); itb != ite; ++itb) {
+        for (itb = reader->data().begin(); itb != ite; ++itb) {
             if (get_atom_type(itb->second) == format_type->second) {
                 carbon_id_to_pdbid_map_[j] = i;
                 result.push_back(std::make_pair(to_coordinates(itb->second), atom_serial_number(itb->second)));
@@ -132,14 +147,14 @@ atoms_list_t YAPDBR::asList(std::string format) {
 
 void YAPDBR::set_coords(const std::vector<coordinates_t>& al)
 {
-    std::map<int, std::string>::iterator itm_b = data_.begin(), itm_e = data_.end();
+    std::map<int, std::string>::iterator itm_b = reader->data().begin(), itm_e = reader->data().end();
     std::vector<coordinates_t>::const_iterator itvec_b = al.begin(), itvec_e = al.end();
 
     size_t i = 0;
     // Iterate over data map
     // Check line type
     //
-    for (itm_b = data_.begin(); itm_b != itm_e; ++itm_b) {
+    for (itm_b = reader->data().begin(); itm_b != itm_e; ++itm_b) {
         if (get_atom_type(itm_b->second) == ATOM_TYPE_E::CA) {
             if (itvec_b != itvec_e) {
                 itm_b->second = pdb_string_from_coordinates(*itvec_b, itm_b->second);

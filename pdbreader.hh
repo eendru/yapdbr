@@ -55,13 +55,15 @@ std::string line_type(const std::string &line);
 /* Just open pdb file, read all content, put only atoms lines to std::map and close file */
 class PDBReader {
 public:
-    PDBReader() = default;
+    explicit PDBReader(const std::string& in_filename);
+
     ~PDBReader() = default;
+    PDBReader() = default;
 
    /*
     * Load pdb file with given filename.
     */
-    void load(const std::string &filename);
+    void load();
 
    /*
     * Get std map with key - atom id (int type) in pdb file
@@ -70,11 +72,11 @@ public:
     std::map<int, std::string>& data();
 
 private:
-    std::string file_;
+    std::string in_filename_;
     std::ifstream is_;
     std::map<int, std::string> data_;
 
-    void open(const std::string &filename);
+    void open();
     void close();
     void parse();
 };
