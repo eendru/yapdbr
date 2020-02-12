@@ -24,6 +24,13 @@ void PDBWriter::write(const std::string &orig_filename, const std::map<int, std:
         throw std::string("Can't open file '") + out_filename_.c_str() + std::string("'");
     }
 
+    std::ofstream out_coords_stream;
+    out_coords_stream.open("coords_" + out_filename_, std::fstream::out);
+    if (!out_coords_stream.is_open()) {
+        out_coords_stream.close();
+        throw std::string("Can't open coords file '") + out_filename_.c_str() + std::string("'");
+    }
+
     std::cout << "Writing data to '" << out_filename_<< "'" << std::endl;
 
     std::string line;
@@ -42,7 +49,9 @@ void PDBWriter::write(const std::string &orig_filename, const std::map<int, std:
         if (type == PDB_LINE_E::ATOM) {
             int key = std::atoi(line.substr(6, 10).c_str());
             is_wr.write(data.at(key).c_str(), data.at(key).size());
+            out_coords_stream.write(data.at(key).c_str(), data.at(key).size());
             is_wr << "\n";
+            out_coords_stream << "\n";
         }
         else {
             is_wr.write(line.c_str(), line.size());
@@ -52,4 +61,5 @@ void PDBWriter::write(const std::string &orig_filename, const std::map<int, std:
 
     is1.close();
     is_wr.close();
+    out_coords_stream.close();
 }
