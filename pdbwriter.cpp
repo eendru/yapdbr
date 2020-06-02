@@ -1,6 +1,7 @@
 #include "pdbwriter.hh"
 
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include "pdbreader.hh"
 
@@ -48,14 +49,11 @@ void PDBWriter::write(const std::string &orig_filename, const std::map<int, std:
 
         if (type == PDB_LINE_E::ATOM) {
             int key = std::atoi(line.substr(6, 10).c_str());
-            is_wr.write(data.at(key).c_str(), data.at(key).size());
-            out_coords_stream.write(data.at(key).c_str(), data.at(key).size());
-            is_wr << "\n";
-            out_coords_stream << "\n";
+            is_wr << data.at(key) << "\n";
+            out_coords_stream << data.at(key) << "\n";
         }
         else {
-            is_wr.write(line.c_str(), line.size());
-            is_wr << "\n";
+            is_wr << line << "\n";
         }
     }
 
